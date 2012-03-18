@@ -50,7 +50,7 @@ Copies pname.exe and uname.exe to %WINDIR% (usually C:\Windows)
 
 ### Unix
 
-+ **install** - `make`
++ **install** - `make install`
 Copies the pname shell script to /usr/bin
 
 
