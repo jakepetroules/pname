@@ -114,7 +114,7 @@ NewlineToCSV()
 
 PrintUsage()
 {
-	echo "Usage: unamex [OPTION]..."
+	echo "Usage: pname [OPTION]..."
 	echo "Print certain system information. With no OPTION, same as -s."
 	echo "  -a, --all                             print all information, in the following order, except omit -p and -i if unknown:"
 	echo ""
@@ -135,7 +135,7 @@ PrintUsage()
 	echo "  --help    display this help and exit"
 	echo "  --version output version information and exit"
 	echo ""
-	echo "Report unamex bugs to bugs@petroules.com"
+	echo "Report pname bugs to bugs@petroules.com"
 	echo "General help using Petroules software <http://www.petroules.com/help>"
 }
 
@@ -402,7 +402,7 @@ elif [ "$1" = "-i" ] ; then
 elif [ "$1" = "-o" ] ; then
 	echo "$UNAME_O"
 elif [ "$1" = "--debug" ] ; then
-	echo "unamex 1.0"
+	echo "pname 1.0"
 	echo "Copyright (c) 2012 Petroules Corporation"
 	echo ""
 	

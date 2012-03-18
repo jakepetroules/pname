@@ -1,4 +1,4 @@
-// uname for Windows 1.0
+// pname 1.0
 // Copyright (c) 2012 Petroules Corporation. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -632,7 +632,7 @@ HRESULT InitializeSystemInformation(SystemInformationEx *info)
 
 void PrintDocumentation()
 {
-	printf("Usage: uname [OPTION]...\n");
+	printf("Usage: pname [OPTION]...\n");
 	printf("Print certain system information. With no OPTION, same as -s.\n\n");
 	
 	printf("  -a, --all\t\t\t\tprint all information, in the following order, except omit -p and -i if unknown:\n\n");
@@ -655,7 +655,7 @@ void PrintDocumentation()
 	printf("      --help\tdisplay this help and exit\n");
 	printf("      --version\toutput version information and exit\n\n");
 	
-	printf("Report uname bugs to bugs@petroules.com\n");
+	printf("Report pname bugs to bugs@petroules.com\n");
 	printf("General help using Petroules software: <http://www.petroules.com/help>\n");
 }
 
