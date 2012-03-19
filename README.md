@@ -3,7 +3,7 @@
 
 pname is a replacement for the [uname](https://en.wikipedia.org/wiki/Uname) program found in Unix operating systems, whose name stands for "Unix name". In contrast, pname stands for "platform name", indicating its more general approach.
 
-The problem with uname is that its outputs are very inconsistent across different Unix operating systems. Some may not support the same options, some may provide a different type of information for a particular option than another operating system do, and in general it provides relatively little useful information, especially not in a nice human-readable format.
+The problem with uname is that its outputs are very inconsistent across different Unix operating systems. Some may not support the same options, some may provide a different type of information for a particular option than another operating system does, and in general it provides relatively little useful information, especially not in a nice human-readable format.
 
 The purpose of pname is to provide an easy way for software developers writing scripts (mainly as part of build processes) to discover a lot of information the underlying operating system. The goal is to support a variety of Unix systems, be able to provide information on individual Linux distributions, and provide a native binary for Windows that also works for shell scripts run in MinGW.
 
