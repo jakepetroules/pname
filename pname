@@ -19,6 +19,7 @@ UNAME_N=`uname -n 2>/dev/null` # Network node hostname
 # Get IP in different ways for each OS family
 IP_NT="unknown"
 IP_LINUX=`ifconfig 2>/dev/null | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`
+IP_SLACKWARE=`/sbin/ifconfig 2>/dev/null | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`
 IP_BSD=`ifconfig 2>/dev/null | grep -E 'inet.[0-9]' | grep -v '127.0.0.1' | awk '{ print $2}'`
 IP_SUNOS=`ifconfig -a 2>/dev/null | grep inet | grep -v '127.0.0.1' | awk '{ print $2}'`
 IP_PUB=`wget -qO- whatismyip.org 2>/dev/null`
@@ -267,6 +268,8 @@ elif [ "$KERNEL" = "Linux" ] ; then
 	elif [ -f $SLACKWARE_ETC ] ; then
 		OS="Slackware"
 		OS_VERSION=`GetLinuxVersionFromFile $SLACKWARE_ETC`
+
+		NETWORK_IP=$IP_SLACKWARE
 	fi
 	
 	# ???
@@ -417,51 +420,51 @@ elif [ "$1" = "--debug" ] ; then
 	echo ""
 	
 	echo "OPERATING SYSTEM:"
-	echo "  Name:\t\t\t$OS"
-	echo "  Version:\t\t$OS_VERSION"
-	echo "  Version name:\t\t$OS_VERSION_NAME"
+	echo "  Name:                 $OS"
+	echo "  Version:              $OS_VERSION"
+	echo "  Version name:         $OS_VERSION_NAME"
 	echo ""
 	
 	echo "KERNEL:"
-	echo "  Name:\t\t\t$KERNEL"
-	echo "  Version:\t\t$KERNEL_VERSION"
-	echo "  Build string:\t\t$KERNEL_BUILD"
+	echo "  Name:                 $KERNEL"
+	echo "  Version:              $KERNEL_VERSION"
+	echo "  Build string:         $KERNEL_BUILD"
 	echo ""
 	
 	echo "ARCHITECTURE:"
-	echo "  Name:\t\t\t$ARCH"
-	echo "  Word size:\t\t$ARCH_BITS"
+	echo "  Name:                 $ARCH"
+	echo "  Word size:            $ARCH_BITS"
 	echo ""
 	
 	echo "HARDWARE:"
-	echo "  Processor type:\t$HARDWARE_PROCESSOR"
-	echo "  Hardware platform:\t$HARDWARE_PLATFORM"
+	echo "  Processor type:       $HARDWARE_PROCESSOR"
+	echo "  Hardware platform:    $HARDWARE_PLATFORM"
 	echo ""
 	
 	echo "NETWORK:"
-	echo "  Hostname:\t\t$NETWORK_HOSTNAME"
+	echo "  Hostname:             $NETWORK_HOSTNAME"
 	IPS_CSV=`NewlineToCSV "$NETWORK_IP"`
-	echo "  IP addresses:\t\t$IPS_CSV"
-	echo "  Public IP:\t\t$NETWORK_IP_PUB"
+	echo "  IP addresses:         $IPS_CSV"
+	echo "  Public IP:            $NETWORK_IP_PUB"
 	echo ""
 	
 	echo "EXTRA (OS-specific):"
 	echo "  <MSYS stuff>"
-	echo "  Windows edition:\t$EXTRA_WINDOWS_EDITION"
-	echo "  Windows service pack:\t$EXTRA_WINDOWS_SERVICE_PACK"
-	echo "  XNU build version:\t$EXTRA_XNU_BUILD_VERSION"
+	echo "  Windows edition:      $EXTRA_WINDOWS_EDITION"
+	echo "  Windows service pack: $EXTRA_WINDOWS_SERVICE_PACK"
+	echo "  XNU build version:    $EXTRA_XNU_BUILD_VERSION"
 	echo ""
 	
 	echo "Underlying UNAME results:"
-	echo "  -s\t$ORIG_UNAME_S"
-	echo "  -o\t$ORIG_UNAME_O"
-	echo "  -m\t$ORIG_UNAME_M"
-	echo "  -p\t$ORIG_UNAME_P"
-	echo "  -i\t$ORIG_UNAME_I"
-	echo "  -M\t$ORIG_UNAME_M2"
-	echo "  -v\t$ORIG_UNAME_V"
-	echo "  -r\t$ORIG_UNAME_R"
-	echo "  -n\t$ORIG_UNAME_N"
+	echo "  -s                    $ORIG_UNAME_S"
+	echo "  -o                    $ORIG_UNAME_O"
+	echo "  -m                    $ORIG_UNAME_M"
+	echo "  -p                    $ORIG_UNAME_P"
+	echo "  -i                    $ORIG_UNAME_I"
+	echo "  -M                    $ORIG_UNAME_M2"
+	echo "  -v                    $ORIG_UNAME_V"
+	echo "  -r                    $ORIG_UNAME_R"
+	echo "  -n                    $ORIG_UNAME_N"
 	echo ""
 else
 	PrintUsage
