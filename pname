@@ -18,9 +18,9 @@ UNAME_N=`uname -n 2>/dev/null` # Network node hostname
 
 # Get IP in different ways for each OS family
 IP_NT="unknown"
-IP_LINUX=`ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`
-IP_BSD=`ifconfig  | grep -E 'inet.[0-9]' | grep -v '127.0.0.1' | awk '{ print $2}'`
-IP_SUNOS=`ifconfig -a | grep inet | grep -v '127.0.0.1' | awk '{ print $2}'`
+IP_LINUX=`ifconfig 2>/dev/null | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`
+IP_BSD=`ifconfig 2>/dev/null | grep -E 'inet.[0-9]' | grep -v '127.0.0.1' | awk '{ print $2}'`
+IP_SUNOS=`ifconfig -a 2>/dev/null | grep inet | grep -v '127.0.0.1' | awk '{ print $2}'`
 IP_PUB=`wget -qO- whatismyip.org 2>/dev/null`
 
 # Msys should never show up because we should be using uname.exe
@@ -219,13 +219,13 @@ elif [ "$KERNEL" = "Linux" ] ; then
 	NETWORK_IP=$IP_LINUX
 	
 	# Version information files for various distributions
-	$AMAZON_ETC="/etc/system-release"
-	$REDHAT_ETC="/etc/redhat-release"
-	$SUSE_ETC="/etc/SUSE-release"
-	$MANDRAKE_ETC="/etc/mandrake-release"
-	$DEBIAN_ETC="/etc/debian_version"
-	$SLACKWARE_ETC="/etc/slackware-version"
-	$UNITEDLINUX_ETC="/etc/UnitedLinux-release"
+	AMAZON_ETC="/etc/system-release"
+	REDHAT_ETC="/etc/redhat-release"
+	SUSE_ETC="/etc/SUSE-release"
+	MANDRAKE_ETC="/etc/mandrake-release"
+	DEBIAN_ETC="/etc/debian_version"
+	SLACKWARE_ETC="/etc/slackware-version"
+	UNITEDLINUX_ETC="/etc/UnitedLinux-release"
 	
 	# Amazon Linux
 	if [ -f $AMAZON_ETC ] && [ ! -z `echo $AMAZON_ETC | grep "Amazon Linux"` ] ; then
@@ -240,7 +240,7 @@ elif [ "$KERNEL" = "Linux" ] ; then
 		# ???
 		PSUEDONAME=`cat $REDHAT_ETC | sed s/.*\(// | sed s/\)//`
 		
-		$CENTOSSTR=`cat /etc/redhat-release`
+		CENTOSSTR=`cat /etc/redhat-release`
 		if [ ! -z `echo $CENTOSSTR | grep "CentOS"` ] ; then
 			OS="CentOS"
 		fi
@@ -364,7 +364,17 @@ elif [ "$KERNEL" = "Haiku" ] ; then
 #####################
 fi
 
-# Re-canonicalize
+# Save original uname results
+ORIG_UNAME_S=$UNAME_S
+ORIG_UNAME_N=$UNAME_N
+ORIG_UNAME_R=$UNAME_R
+ORIG_UNAME_V=$UNAME_V
+ORIG_UNAME_M=$UNAME_M
+ORIG_UNAME_P=$UNAME_P
+ORIG_UNAME_I=$UNAME_I
+ORIG_UNAME_O=$UNAME_O
+
+# Canonicalize the uname variables to our standard results
 UNAME_S=$KERNEL
 UNAME_N=$NETWORK_HOSTNAME
 UNAME_R=$KERNEL_VERSION
@@ -443,15 +453,15 @@ elif [ "$1" = "--debug" ] ; then
 	echo ""
 	
 	echo "Underlying UNAME results:"
-	echo "  -s\t$UNAME_S"
-	echo "  -o\t$UNAME_O"
-	echo "  -m\t$UNAME_M"
-	echo "  -p\t$UNAME_P"
-	echo "  -i\t$UNAME_I"
-	echo "  -M\t$UNAME_M2"
-	echo "  -v\t$UNAME_V"
-	echo "  -r\t$UNAME_R"
-	echo "  -n\t$UNAME_N"
+	echo "  -s\t$ORIG_UNAME_S"
+	echo "  -o\t$ORIG_UNAME_O"
+	echo "  -m\t$ORIG_UNAME_M"
+	echo "  -p\t$ORIG_UNAME_P"
+	echo "  -i\t$ORIG_UNAME_I"
+	echo "  -M\t$ORIG_UNAME_M2"
+	echo "  -v\t$ORIG_UNAME_V"
+	echo "  -r\t$ORIG_UNAME_R"
+	echo "  -n\t$ORIG_UNAME_N"
 	echo ""
 else
 	PrintUsage
