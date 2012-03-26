@@ -1,5 +1,7 @@
 #!/bin/sh
 
+PNAME_VERSION=0.1
+
 # Exit codes:
 # 2 - error determining processor word size
 # 3 - unknown Mac OS X version name
@@ -97,14 +99,14 @@ GetMacOSVersionName()
 GetLinuxVersionFromFile()
 {
 	FILE=$1
-	
+
 	# Amazon Linux & RedHat-derived
 	if [ "$FILE" = "/etc/system-release" ] || [ "$FILE" = "/etc/redhat-release" ] ; then
 		AFTER=".*release"
 	elif [ "$FILE" = "/etc/slackware-version" ] ; then
 		AFTER="Slackware"
 	fi
-	
+
 	cat "$FILE" | sed s/$AFTER\ // | sed s/\ .*//
 }
 
@@ -115,6 +117,7 @@ NewlineToCSV()
 
 PrintUsage()
 {
+	echo "pname, version $PNAME_VERSION"
 	echo "Usage: pname [OPTION]..."
 	echo "Print certain system information. With no OPTION, same as -s."
 	echo "  -a, --all                             print all information, in the following order, except omit -p and -i if unknown:"
@@ -159,6 +162,14 @@ OS_VERSION_NAME="unknown"
 ARCH=$UNAME_M
 ARCH_BITS=`GetOSBits`
 
+# http://serverfault.com/a/163493/50603
+ARCH_ENDIANNESS_BIT=`echo I | tr -d [:space:] | od -to2 | head -n1 | awk '{print $2}' | cut -c6`
+if [ "$ARCH_ENDIANNESS_BIT" = "1" ] ; then
+	ARCH_ENDIANNESS="little"
+else
+	ARCH_ENDIANNESS="big"
+fi
+
 # Hardware architecture/platform information
 HARDWARE_PROCESSOR=$UNAME_P
 if [ -z "$HARDWARE_PROCESSOR" ] ; then
@@ -181,16 +192,16 @@ fi
 #############################
 # Microsoft Windows NT family
 #############################
-if [ "$KERNEL" = "NT" ] ; then	
+if [ "$KERNEL" = "NT" ] ; then
 	OS=$UNAME_O
 	OS_VERSION=`uname --os-version`
 	OS_VERSION_NAME=`uname --os-version-name`
-	
+
 	NETWORK_IP=$IP_NT
-	
+
 	EXTRA_WINDOWS_EDITION=`uname --os-edition`
 	EXTRA_WINDOWS_SERVICE_PACK=`uname --os-service-pack`
-	
+
 	EXTRA_MSYS_R=$UNAME_R # returns a bunch of version numbers
 	EXTRA_MSYS_V=$UNAME_V # returns the date and time of the MSYS build
 	EXTRA_MSYS_M=$UNAME_M # will return 32 bits for a 32-bit MSYS environment even on a 64 bit OS
@@ -200,14 +211,29 @@ if [ "$KERNEL" = "NT" ] ; then
 #####################################
 elif [ "$KERNEL" = "Darwin" ] ; then
 	KERNEL="XNU"
-	
+
+	# Note: for iOS devices the node name will be same as the
+	# name of the device. i.e. my iPod Touch's nodename is
+	# "Jake-Petrouless-iPod". Although obvious, worth mentioning...
+
+	# Note: for iOS devices the version string will contain "RELEASE_ARM_"
+	# which can help indicate processor architecture and such
+	if [ `echo $KERNEL_BUILD | grep '/RELEASE_ARM_'` ] ; then
+		# TODO: GetOsBits will have failed by now since iOS
+		# oddly returns "iPod4,1" for example rather than arm...
+		# on the bright side we get the device type and version
+		OS=iOS
+		ARCH=arm
+		ARCH_BITS=32
+	fi
+
 	# TODO: Only detects Mac OS X, should also detect Darwin and iOS
 	OS=`sw_vers -productName` # Can return "Mac OS X" or "Mac OS X Server"
 	OS_VERSION=`sw_vers -productVersion`
 	OS_VERSION_NAME=`GetMacOSVersionName $OS_VERSION`
-	
+
 	NETWORK_IP=$IP_BSD
-	
+
 	EXTRA_XNU_BUILD_VERSION=`sw_vers -buildVersion`
 
 ##################################
@@ -216,9 +242,9 @@ elif [ "$KERNEL" = "Darwin" ] ; then
 elif [ "$KERNEL" = "Linux" ] ; then
 	# Generally will contain "GNU/Linux", this is a good default if we are unable to identify the distribution
 	OS=$UNAME_O
-	
+
 	NETWORK_IP=$IP_LINUX
-	
+
 	# Version information files for various distributions
 	AMAZON_ETC="/etc/system-release"
 	REDHAT_ETC="/etc/redhat-release"
@@ -227,43 +253,43 @@ elif [ "$KERNEL" = "Linux" ] ; then
 	DEBIAN_ETC="/etc/debian_version"
 	SLACKWARE_ETC="/etc/slackware-version"
 	UNITEDLINUX_ETC="/etc/UnitedLinux-release"
-	
+
 	# Amazon Linux
 	if [ -f $AMAZON_ETC ] && [ ! -z `echo $AMAZON_ETC | grep "Amazon Linux"` ] ; then
 		OS="Amazon Linux"
 		OS_VERSION=`GetLinuxVersionFromFile $AMAZON_ETC`
-	
+
 	# RedHat, CentOS
 	elif [ -f $REDHAT_ETC ] ; then
 		OS="RedHat"
 		OS_VERSION=`GetLinuxVersionFromFile $REDHAT_ETC`
-		
+
 		# ???
 		PSUEDONAME=`cat $REDHAT_ETC | sed s/.*\(// | sed s/\)//`
-		
+
 		CENTOSSTR=`cat /etc/redhat-release`
 		if [ ! -z `echo $CENTOSSTR | grep "CentOS"` ] ; then
 			OS="CentOS"
 		fi
-	
+
 	# Novell SUSE
 	elif [ -f $SUSE_ETC ] ; then
 		OS=`cat $SUSE_ETC | tr "\n" ' '| sed s/VERSION.*//`
 		OS_VERSION=`cat $SUSE_ETC | tr "\n" ' ' | sed s/.*=\ //`
-	
+
 	# Mandrake
 	elif [ -f $MANDRAKE_ETC ] ; then
 		OS="Mandrake"
 		OS_VERSION=`cat $MANDRAKE_ETC | sed s/.*release\ // | sed s/\ .*//`
-		
+
 		# ???
 		PSUEDONAME=`cat $MANDRAKE_ETC | sed s/.*\(// | sed s/\)//`
-	
+
 	# Debian
 	elif [ -f $DEBIAN_ETC ] ; then
 		OS="Debian"
 		# `cat /etc/debian_version` returns "wheezy/sid" on Ubuntu 11.10... huh??
-	
+
 	# Slackware
 	elif [ -f $SLACKWARE_ETC ] ; then
 		OS="Slackware"
@@ -271,7 +297,7 @@ elif [ "$KERNEL" = "Linux" ] ; then
 
 		NETWORK_IP=$IP_SLACKWARE
 	fi
-	
+
 	# ???
 	if [ -f $UNITEDLINUX_ETC ] ; then
 		# This is some extra stuff that was appended to the distribution name
@@ -287,12 +313,12 @@ elif [ "$KERNEL" = "FreeBSD" ] ; then
 	if [ -z "$OS" ] ; then
 		OS="$KERNEL"
 	fi
-	
+
 	# TODO: This needs to strip off the "-RELEASE" suffix
 	OS_VERSION="$KERNEL_VERSION"
-	
+
 	NETWORK_IP=$IP_BSD
-	
+
 #########
 # OpenBSD
 #########
@@ -310,7 +336,7 @@ elif [ "$KERNEL" = "NetBSD" ] ; then
 ###############
 elif [ "$KERNEL" = "DragonFly" ] ; then
 	#OS="$KERNEL BSD"
-	
+
 	NETWORK_IP=$IP_BSD
 
 ################################
@@ -318,10 +344,10 @@ elif [ "$KERNEL" = "DragonFly" ] ; then
 ################################
 elif [ "$KERNEL" = "SunOS" ] ; then
 	KERNEL_VERSION=$UNAME_V
-	
+
 	OS="Solaris"
 	OS_VERSION=$UNAME_R
-	
+
 	NETWORK_IP=$IP_SUNOS
 
 #########
@@ -331,10 +357,10 @@ elif [ "$KERNEL" = "AIX" ] ; then
 	# Apparently for AIX uname -v gives the major version and uname -v gives the minor
 	# but we're using the method according to Novell's website to determine the versions
 	KERNEL_VERSION=`oslevel -r`
-	
+
 	OS="AIX"
 	OS_VERSION=`oslevel`
-	
+
 #######
 # HP-UX
 #######
@@ -346,7 +372,7 @@ elif [ "$KERNEL" = "??????????" ] ; then # HP Unix...
 ##########
 elif [ "$KERNEL" = "IRIX" ] || [ "$KERNEL" = "IRIX64" ] ; then
 	KERNEL="IRIX"
-	
+
 	OS="IRIX"
 	OS_VERSION=$UNAME_R
 
@@ -392,11 +418,11 @@ if [ "$1" = "-a" ] || [ "$1" = "--all" ] ; then
 	if [ "$UNAME_P" != "unknown" ] ; then
 		printf "$UNAME_P "
 	fi
-	
+
 	if [ "$UNAME_I" != "unknown" ] ; then
 		printf "$UNAME_I "
 	fi
-	
+
 	printf "$UNAME_O\n"
 elif [ -z "$1" ] || [ "$1" = "-s" ] ; then
 	echo "$UNAME_S"
@@ -415,46 +441,47 @@ elif [ "$1" = "-i" ] ; then
 elif [ "$1" = "-o" ] ; then
 	echo "$UNAME_O"
 elif [ "$1" = "--debug" ] ; then
-	echo "pname 1.0"
+	echo "pname $PNAME_VERSION"
 	echo "Copyright (c) 2012 Petroules Corporation"
 	echo ""
-	
+
 	echo "OPERATING SYSTEM:"
 	echo "  Name:                 $OS"
 	echo "  Version:              $OS_VERSION"
 	echo "  Version name:         $OS_VERSION_NAME"
 	echo ""
-	
+
 	echo "KERNEL:"
 	echo "  Name:                 $KERNEL"
 	echo "  Version:              $KERNEL_VERSION"
 	echo "  Build string:         $KERNEL_BUILD"
 	echo ""
-	
+
 	echo "ARCHITECTURE:"
 	echo "  Name:                 $ARCH"
 	echo "  Word size:            $ARCH_BITS"
+	echo "  Endianness:           $ARCH_ENDIANNESS"
 	echo ""
-	
+
 	echo "HARDWARE:"
 	echo "  Processor type:       $HARDWARE_PROCESSOR"
 	echo "  Hardware platform:    $HARDWARE_PLATFORM"
 	echo ""
-	
+
 	echo "NETWORK:"
 	echo "  Hostname:             $NETWORK_HOSTNAME"
 	IPS_CSV=`NewlineToCSV "$NETWORK_IP"`
 	echo "  IP addresses:         $IPS_CSV"
 	echo "  Public IP:            $NETWORK_IP_PUB"
 	echo ""
-	
+
 	echo "EXTRA (OS-specific):"
 	echo "  <MSYS stuff>"
 	echo "  Windows edition:      $EXTRA_WINDOWS_EDITION"
 	echo "  Windows service pack: $EXTRA_WINDOWS_SERVICE_PACK"
 	echo "  XNU build version:    $EXTRA_XNU_BUILD_VERSION"
 	echo ""
-	
+
 	echo "Underlying UNAME results:"
 	echo "  -s                    $ORIG_UNAME_S"
 	echo "  -o                    $ORIG_UNAME_O"
@@ -466,6 +493,8 @@ elif [ "$1" = "--debug" ] ; then
 	echo "  -r                    $ORIG_UNAME_R"
 	echo "  -n                    $ORIG_UNAME_N"
 	echo ""
+elif [ "$1" = "--version" ] ; then
+	echo "$PNAME_VERSION"
 else
 	PrintUsage
 fi

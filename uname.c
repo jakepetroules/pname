@@ -1,4 +1,4 @@
-// pname 1.0
+// pname 0.1
 // Copyright (c) 2012 Petroules Corporation. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -24,6 +24,8 @@
 // Resources used:
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms724429.aspx
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms724833.aspx
+
+#define VERSION "0.1"
 
 #include <windows.h>
 #include <stdio.h>
@@ -314,19 +316,19 @@ typedef struct
 	DWORD MajorVersion;
 	DWORD MinorVersion;
 	DWORD BuildNumber;
-	
+
 	// Service pack version numbers
 	WORD ServicePackMajorVersion;
 	WORD ServicePackMinorVersion;
-	
+
 	// Simple conditionals
 	BOOL IsServer;
 	BOOL IsNT;
-	
+
 	// Flags for determining other things
 	DWORD ProductType; // Product type identifier for Windows NT 6+ only
 	WORD SuiteMask;
-	
+
 	WORD ProcessorArchitecture;
 } SystemInformationEx;
 
@@ -369,7 +371,7 @@ char* GetVersionName(SystemInformationEx *info)
 			return "Unknown";
 		}
 	}
-	
+
 	return "Unknown";
 }
 
@@ -559,7 +561,7 @@ char* GetEditionName(SystemInformationEx *info)
 			return "Unknown";
 		}
 	}
-	
+
 	return "Unknown";
 }
 
@@ -568,22 +570,22 @@ HRESULT InitializeSystemInformation(SystemInformationEx *info)
 	// Pointers to functions we must call dynamically since they may not be available on the OS we're running
 	PGNSI GetNativeSystemInfo = (PGNSI)GetProcAddress(GetModuleHandleA("kernel32.dll"), "GetNativeSystemInfo");
 	PGPI GetProductInfo = (PGPI)GetProcAddress(GetModuleHandleA("kernel32.dll"), "GetProductInfo");
-	
+
 	OSVERSIONINFOEX vi;
 	SYSTEM_INFO si;
 	ZeroMemory(info, sizeof(SystemInformationEx));
 	ZeroMemory(&vi, sizeof(OSVERSIONINFOEX));
 	ZeroMemory(&si, sizeof(SYSTEM_INFO));
 	vi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	
+
 	// Get operating system version information
 	if (!GetVersionEx((OSVERSIONINFO*)&vi))
 		return 1;
-		
+
 	// Non-NT versions or versions below NT5 (Windows 2000) are not supported
 	if (vi.dwPlatformId != VER_PLATFORM_WIN32_NT || vi.dwMajorVersion < 5)
 		return 2;
-		
+
 	if (!GetProductInfo || !GetProductInfo(vi.dwMajorVersion, vi.dwMinorVersion, vi.wServicePackMajor, vi.wServicePackMinor, &info->ProductType))
 		return 1;
 
@@ -596,17 +598,17 @@ HRESULT InitializeSystemInformation(SystemInformationEx *info)
 	info->MajorVersion = vi.dwMajorVersion;
 	info->MinorVersion = vi.dwMinorVersion;
 	info->BuildNumber = vi.dwBuildNumber;
-	
+
 	info->ServicePackMajorVersion = vi.wServicePackMajor;
 	info->ServicePackMinorVersion = vi.wServicePackMinor;
-	
+
 	info->IsServer = vi.wProductType != VER_NT_WORKSTATION;
 	info->IsNT = vi.dwPlatformId == VER_PLATFORM_WIN32_NT;
-	
+
 	info->SuiteMask = vi.wSuiteMask;
-	
+
 	info->ProcessorArchitecture = si.wProcessorArchitecture;
-	
+
 	return S_OK;
 }
 
@@ -632,11 +634,12 @@ HRESULT InitializeSystemInformation(SystemInformationEx *info)
 
 void PrintDocumentation()
 {
+	printf("pname " VERSION "\n");
 	printf("Usage: pname [OPTION]...\n");
 	printf("Print certain system information. With no OPTION, same as -s.\n\n");
-	
+
 	printf("  -a, --all\t\t\t\tprint all information, in the following order, except omit -p and -i if unknown:\n\n");
-	
+
 	printf("  -s, --kernel-name\t\t\tprint the kernel name\n");
 	printf("  -n, --nodename\t\t\tprint the network node hostname\n");
 	printf("  -r, --kernel-release\t\t\tprint the kernel release\n");
@@ -649,12 +652,12 @@ void PrintDocumentation()
 	printf("      --operating-system-version-name\tprint the operating system version name\n");
 	printf("      --operating-system-edition\tprint the operating system edition\n");
 	printf("      --operating-system-service-pack\tprint the operating system service pack level\n");
-	
+
 	printf("\n");
-	
+
 	printf("      --help\tdisplay this help and exit\n");
 	printf("      --version\toutput version information and exit\n\n");
-	
+
 	printf("Report pname bugs to bugs@petroules.com\n");
 	printf("General help using Petroules software: <http://www.petroules.com/help>\n");
 }
@@ -663,7 +666,7 @@ BOOL GetVersionInfo(char *fileName, short aVersion[])
 {
 	UINT len = 0;
 	VS_FIXEDFILEINFO *vsfi = NULL;
-	
+
 	DWORD handle = 0;
 	DWORD size = GetFileVersionInfoSize(fileName, &handle);
 	BYTE* versionInfo = (BYTE*)calloc(size, sizeof(BYTE));
@@ -672,7 +675,7 @@ BOOL GetVersionInfo(char *fileName, short aVersion[])
 		free(versionInfo);
 		return 1;
 	}
-	
+
 	// we have version information
 	VerQueryValue(versionInfo, "\\", (void**)&vsfi, &len);
 	aVersion[0] = HIWORD(vsfi->dwFileVersionMS);
@@ -680,7 +683,7 @@ BOOL GetVersionInfo(char *fileName, short aVersion[])
 	aVersion[2] = HIWORD(vsfi->dwFileVersionLS);
 	aVersion[3] = LOWORD(vsfi->dwFileVersionLS);
 	free(versionInfo);
-	
+
 	return TRUE;
 }
 
@@ -695,15 +698,15 @@ BOOL GetOSBuildDate(char *date)
 	file = CreateFileA(buf, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
 	if (file == INVALID_HANDLE_VALUE)
 		return FALSE;
-	
+
 	if (!GetFileTime(file, 0, 0, &modDate))
 		return FALSE;
-		
+
 	if (!FileTimeToSystemTime(&modDate, &t))
 		return FALSE;
-		
+
 	sprintf(date, "%d/%d/%d %d:%d:%d", t.wMonth, t.wDay, t.wYear, t.wHour, t.wMinute, t.wSecond);
-	
+
 	CloseHandle(file);
 	return TRUE;
 }
@@ -725,33 +728,33 @@ int main(int argc, char *argv[])
 	int j = 0;
 	short aVersion[4];
 	char buildDate[100];
-	
+
 	SystemInformationEx systemInfo;
 	if (FAILED(InitializeSystemInformation(&systemInfo)))
 	{
 		printf("Failed to retrieve system information");
 		return 1;
 	}
-	
+
 	if (!GetVersionInfo("kernel32.dll", aVersion))
 		return 1;
-		
+
 	if (!GetOSBuildDate(buildDate))
 		return 1;
-	
+
 	// Initialize sloppy C pointer to pointer
 	for (i = 0; i < strSize; i++)
 	{
 		outputs[i] = (char*)calloc(strSize, sizeof(char) * strSize);
 	}
-	
+
 	i = 0;
-	
+
 	if (argc > 1)
 	{
 		char *args = argv[1];
 		argSize = strlen(args);
-		
+
 		if (argSize > 1 && args[0] == '-' && args[1] != '-')
 		{
 			for (i = 1; i < argSize; i++)
@@ -826,6 +829,8 @@ int main(int argc, char *argv[])
 				// continue... P I R
 				else if (StringsEqual(argv[i], "--kernel-version"))
 					options |= OPT_KERNEL_VERSION;
+				else if (StringsEqual(argv[i], "--version"))
+					printf(VERSION); // \n gets put in down lower
 				else
 				{
 					PrintDocumentation();
@@ -838,45 +843,45 @@ int main(int argc, char *argv[])
 	{
 		options |= OPT_S;
 	}
-	
+
 	// Start buffering data for output
 	i = 0;
-	
+
 	if (all)
 	{
 		options = OPT_A;
 	}
-	
+
 	if (options & OPT_KERNEL)
 	{
 		outputs[i++] = "NT";
 	}
-	
+
 	if (options & OPT_N)
 	{
 		GetComputerNameA(outputs[i++], &strSize2);
 	}
-	
+
 	if (options & OPT_OS)
 	{
 		outputs[i++] = "Windows";
 	}
-	
+
 	if (options & OPT_OS_VERSION)
 	{
 		sprintf(outputs[i++], "%d.%d.%d", systemInfo.MajorVersion, systemInfo.MinorVersion, systemInfo.BuildNumber);
 	}
-	
+
 	if (options & OPT_OS_VERSION_NAME)
 	{
 		strcpy(outputs[i++], GetVersionName(&systemInfo));
 	}
-	
+
 	if (options & OPT_OS_EDITION)
 	{
 		strcpy(outputs[i++], GetEditionName(&systemInfo));
 	}
-	
+
 	if (options & OPT_OS_SP)
 	{
 		char *out = outputs[i++];
@@ -884,10 +889,10 @@ int main(int argc, char *argv[])
 		{
 			sprintf(out, "Service Pack ");
 		}
-		
+
 		sprintf(out + strlen(out), "%d.%d", systemInfo.ServicePackMajorVersion, systemInfo.ServicePackMinorVersion);
 	}
-	
+
 	if (options & OPT_OS_ARCH)
 	{
 		switch (systemInfo.ProcessorArchitecture)
@@ -907,29 +912,29 @@ int main(int argc, char *argv[])
 			break;
 		}
 	}
-	
+
 	if (options & OPT_P)
 	{
 		if (!all)
 			outputs[i++] = "unknown";
 	}
-	
+
 	if (options & OPT_I)
 	{
 		if (!all)
 			outputs[i++] = "unknown";
 	}
-	
+
 	if (options & OPT_KERNEL_VERSION)
 	{
 		sprintf(outputs[i++], "%d.%d.%d.%d", systemInfo.MajorVersion, systemInfo.MinorVersion, systemInfo.BuildNumber, aVersion[3]);
 	}
-	
+
 	if (options & OPT_V)
 	{
 		sprintf(outputs[i++], "%s %d.%d.%d.%d %s", "NT", aVersion[0], aVersion[1], aVersion[2], aVersion[3], buildDate);
 	}
-	
+
 	// Print all output
 	for (j = 0; j < i; j++)
 	{
@@ -937,9 +942,9 @@ int main(int argc, char *argv[])
 		{
 			printf(" ");
 		}
-		
+
 		printf(outputs[j]);
 	}
-	
-	printf("\n");	
+
+	printf("\n");
 }
