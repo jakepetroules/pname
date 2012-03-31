@@ -35,7 +35,7 @@ fi
 # Returns a number indicating the word size of the processor in bits
 GetOSBits()
 {
-	if [ "$UNAME_M" = "i686" ] || [ "$UNAME_M" = "ppc" ]; then
+	if [ "$UNAME_M" = "i386" ] || [ "$UNAME_M" = "i486" ] || [ "$UNAME_M" = "i586" ] || [ "$UNAME_M" = "i686" ] || [ "$UNAME_M" = "ppc" ]; then
 		echo 32
 	elif [ "$UNAME_M" = "x86_64" ] || [ "$UNAME_M" = "ppc64" ] || [ "$UNAME_M" = "ia64" ] ; then
 		echo 64
@@ -248,7 +248,7 @@ elif [ "$KERNEL" = "Linux" ] ; then
 	# Version information files for various distributions
 	AMAZON_ETC="/etc/system-release"
 	REDHAT_ETC="/etc/redhat-release"
-	SUSE_ETC="/etc/SUSE-release"
+	SUSE_ETC="/etc/SuSE-release"
 	MANDRAKE_ETC="/etc/mandrake-release"
 	DEBIAN_ETC="/etc/debian_version"
 	SLACKWARE_ETC="/etc/slackware-version"
@@ -259,7 +259,7 @@ elif [ "$KERNEL" = "Linux" ] ; then
 		OS="Amazon Linux"
 		OS_VERSION=`GetLinuxVersionFromFile $AMAZON_ETC`
 
-	# RedHat, CentOS
+	# RedHat, CentOS, Fedora
 	elif [ -f $REDHAT_ETC ] ; then
 		OS="RedHat"
 		OS_VERSION=`GetLinuxVersionFromFile $REDHAT_ETC`
@@ -267,15 +267,18 @@ elif [ "$KERNEL" = "Linux" ] ; then
 		# ???
 		PSUEDONAME=`cat $REDHAT_ETC | sed s/.*\(// | sed s/\)//`
 
-		CENTOSSTR=`cat /etc/redhat-release`
-		if [ ! -z `echo $CENTOSSTR | grep "CentOS"` ] ; then
+		REDHAT_ETC_CAT=`cat $REDHAT_ETC`
+		if [ ! -z "`echo $REDHAT_ETC_CAT | grep CentOS`" ] ; then
 			OS="CentOS"
+		elif [ ! -z "`echo $REDHAT_ETC_CAT | grep Fedora`" ] ; then
+			OS="Fedora"
 		fi
 
 	# Novell SUSE
 	elif [ -f $SUSE_ETC ] ; then
-		OS=`cat $SUSE_ETC | tr "\n" ' '| sed s/VERSION.*//`
-		OS_VERSION=`cat $SUSE_ETC | tr "\n" ' ' | sed s/.*=\ //`
+		OS_VERSION=`cat $SUSE_ETC | grep "VERSION" | sed s/.*=\ //`
+		OS_VERSION_NAME=`cat $SUSE_ETC | grep "CODENAME" | sed s/.*=\ //`
+		OS=`cat $SUSE_ETC | tr "\n" ' '| sed s/$OS_VERSION.*// | sed s/\ .*//`
 
 	# Mandrake
 	elif [ -f $MANDRAKE_ETC ] ; then
@@ -388,6 +391,15 @@ elif [ "$KERNEL" = "Minix" ] ; then
 elif [ "$KERNEL" = "Haiku" ] ; then
 	echo "unknown..."
 
+#######
+# Other
+#######
+
+elif [ -f "/usr/PCBSD" ] ; then
+	OS="PCBSD"
+	KERNEL="PCBSD"
+fi
+
 #####################
 # End of OS detection
 #####################
@@ -493,6 +505,11 @@ elif [ "$1" = "--debug" ] ; then
 	echo "  -r                    $ORIG_UNAME_R"
 	echo "  -n                    $ORIG_UNAME_N"
 	echo ""
+
+	if [ -f $SUSE_ETC ] ; then
+		echo "WARNING: This script must be run as root to obtain IP address information on this system."
+		echo ""
+	fi
 elif [ "$1" = "--version" ] ; then
 	echo "$PNAME_VERSION"
 else
