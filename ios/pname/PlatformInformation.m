@@ -11,7 +11,7 @@
 
 @implementation PlatformInformation
 
-- (id) init
+- (id)init
 {
     self = [super init];
     if (self != nil)
@@ -33,44 +33,44 @@
     return self;
 }
 
-- (void) dealloc
+- (void)dealloc
 {
     [super dealloc];
 }
 
-- (NSString*) operatingSystemName
+- (NSString *)operatingSystemName
 {
     // Do not use this as it'll say "iPhone OS"
     // return [[UIDevice currentDevice] systemName];
     return @"iOS";
 }
 
-- (NSString*) operatingSystemVersion
+- (NSString *)operatingSystemVersion
 {
     return [[UIDevice currentDevice] systemVersion];
 }
 
-- (NSString*) operatingSystemVersionName
+- (NSString *)operatingSystemVersionName
 {
     return @"unknown";
 }
 
-- (NSString*) kernelName
+- (NSString *)kernelName
 {
     return @"XNU";
 }
 
-- (NSString*) kernelVersion
+- (NSString *)kernelVersion
 {
     return [self unameRelease];
 }
 
-- (NSString*) kernelBuildString
+- (NSString *)kernelBuildString
 {
     return [self unameVersion];
 }
 
-- (NSString*) architecture
+- (NSString *)architecture
 {
 #if TARGET_IPHONE_SIMULATOR
     // uname gives the arch of the host platform, which is NOT what the simulator
@@ -97,68 +97,89 @@
 #endif
 }
 
-- (int) wordSize
+- (int)wordSize
 {
     return (sizeof(void*) << 3);
 }
 
-- (NSString*) endianness
+- (NSString *)endianness
 {
     // Same method as Qt uses
     static const unsigned int one = 1;
     return (*((unsigned char *) &one) == 0) ? @"big" : @"little";
 }
 
-- (NSString*) processorType
+- (NSString *)processorType
 {
     return @"unknown";
 }
 
-- (NSString*) hardwarePlatform
+- (NSString *)hardwarePlatform
 {
-    NSString *platform = [[UIDevice currentDevice] model];
+    // See this link for providing a more detailed description
+    // http://stackoverflow.com/questions/8024833/determine-users-device-using-ios-sdk-and-full-cocoa-touch-objective-c-code
+    
+    NSString *platform = [[UIDevice currentDevice] model]; // i.e. "iPhone", "iPod touch", "iPad"
 #if !TARGET_IPHONE_SIMULATOR
-    // for some odd reason this gives us the device model ID
+    // for some odd reason this gives us the device model ID (i.e. iPhone4,1) on the real device
     // on simulator it gives the host's architecture (i.e. useless)
     platform = [platform stringByAppendingFormat: @" (%@)", [self unameMachine]];
 #endif
     return platform;
 }
 
-- (NSString*) hostname
+- (NSString *)hostname
 {
     return [self unameNodename];
 }
 
-- (NSArray*) ipAddresses
+- (NSArray *)ipAddresses
 {
+    // http://iphonesdksnippets.com/post/2009/09/07/Get-IP-address-of-iPhone.aspx
+    // https://github.com/erica/uidevice-extension
     return [[NSArray alloc] init];
 }
 
-- (NSString*) publicIP
+- (NSString *)publicIP
 {
     return @"unknown";
 }
 
-- (NSString*) xnuBuildVersion
+- (NSString *)xnuBuildVersion
 {
     return @"unknown";
 }
 
-- (NSString*) systemName
+- (NSString *)systemName
 {
     return [[UIDevice currentDevice] systemName];
 }
 
-- (NSString*) deviceName
+- (NSString *)deviceName
 {
     return [[UIDevice currentDevice] name];
 }
 
-- (NSString*) uiIdiom
+/*!
+ * Retrieves the UI idiom (i.e. iPhone or iPad) in a way that is safe for pre-iOS 3.2 devices
+ */
+- (UIUserInterfaceIdiom)userInterfaceIdiom
 {
-    UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-    switch (idiom)
+    UIUserInterfaceIdiom idiom = UIUserInterfaceIdiomPhone;
+    
+    // If the userInterfaceIdiom selector is missing, the iOS version
+    // is older than 3.2 and is therefore guaranteed to be an iPhone
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(userInterfaceIdiom)])
+    {
+        idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+    }
+    
+    return idiom;
+}
+
+- (NSString *)userInterfaceIdiomString
+{
+    switch ([self userInterfaceIdiom])
     {
         case UIUserInterfaceIdiomPhone:
             return @"iPhone";
@@ -169,27 +190,27 @@
     }
 }
 
-- (NSString*) unameSysname
+- (NSString *)unameSysname
 {
     return m_unameSysname;
 }
 
-- (NSString*) unameNodename
+- (NSString *)unameNodename
 {
     return m_unameNodename;
 }
 
-- (NSString*) unameRelease
+- (NSString *)unameRelease
 {
     return m_unameRelease;
 }
 
-- (NSString*) unameVersion
+- (NSString *)unameVersion
 {
     return m_unameVersion;
 }
 
-- (NSString*) unameMachine
+- (NSString *)unameMachine
 {
     return m_unameMachine;
 }

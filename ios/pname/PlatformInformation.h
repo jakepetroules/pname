@@ -18,37 +18,35 @@
     NSString *m_unameMachine;
 }
 
-- (id) init;
-- (void) dealloc;
+- (NSString *)operatingSystemName;
+- (NSString *)operatingSystemVersion;
+- (NSString *)operatingSystemVersionName;
 
-- (NSString*) operatingSystemName;
-- (NSString*) operatingSystemVersion;
-- (NSString*) operatingSystemVersionName;
+- (NSString *)kernelName;
+- (NSString *)kernelVersion;
+- (NSString *)kernelBuildString;
 
-- (NSString*) kernelName;
-- (NSString*) kernelVersion;
-- (NSString*) kernelBuildString;
+- (NSString *)architecture;
+- (int)wordSize;
+- (NSString *)endianness;
 
-- (NSString*) architecture;
-- (int) wordSize;
-- (NSString*) endianness;
+- (NSString *)processorType;
+- (NSString *)hardwarePlatform;
 
-- (NSString*) processorType;
-- (NSString*) hardwarePlatform;
+- (NSString *)hostname;
+- (NSArray *)ipAddresses;
+- (NSString *)publicIP;
 
-- (NSString*) hostname;
-- (NSArray*) ipAddresses;
-- (NSString*) publicIP;
+- (NSString *)xnuBuildVersion;
+- (NSString *)systemName;
+- (NSString *)deviceName;
+- (UIUserInterfaceIdiom)userInterfaceIdiom;
+- (NSString *)userInterfaceIdiomString;
 
-- (NSString*) xnuBuildVersion;
-- (NSString*) systemName;
-- (NSString*) deviceName;
-- (NSString*) uiIdiom;
-
-- (NSString*) unameSysname;
-- (NSString*) unameNodename;
-- (NSString*) unameRelease;
-- (NSString*) unameVersion;
-- (NSString*) unameMachine;
+- (NSString *)unameSysname;
+- (NSString *)unameNodename;
+- (NSString *)unameRelease;
+- (NSString *)unameVersion;
+- (NSString *)unameMachine;
 
 @end

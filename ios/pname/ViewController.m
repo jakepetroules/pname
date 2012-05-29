@@ -15,71 +15,94 @@
 
 @implementation ViewController
 
-@synthesize infoLabel;
-@synthesize scrollView;
+@synthesize data;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    PlatformInformation *pi = [[PlatformInformation alloc] init];
+    pi = [[PlatformInformation alloc] init];
     
-    NSString *output = @"";
+    NSArray *osData = [[NSArray alloc] initWithObjects:
+                       [[NSArray alloc] initWithObjects: [pi operatingSystemName], @"Name", nil],
+                       [[NSArray alloc] initWithObjects: [pi operatingSystemVersion], @"Version", nil],
+                       [[NSArray alloc] initWithObjects: [pi operatingSystemVersionName], @"Version name", nil],
+                       nil];
     
-    output = [output stringByAppendingString: @"OPERATING SYSTEM:\n"];
-    output = [output stringByAppendingFormat: @"  Name:                 %@\n", [pi operatingSystemName]];
-    output = [output stringByAppendingFormat: @"  Version:              %@\n", [pi operatingSystemVersion]];
-    output = [output stringByAppendingFormat: @"  Version name:         %@\n", [pi operatingSystemVersionName]];
-    output = [output stringByAppendingString: @"\nKERNEL:\n"];
-    output = [output stringByAppendingFormat: @"  Name:                 %@\n", [pi kernelName]];
-    output = [output stringByAppendingFormat: @"  Version:              %@\n", [pi kernelVersion]];
-    output = [output stringByAppendingFormat: @"  Build string:         %@\n", [pi kernelBuildString]];
-    output = [output stringByAppendingString: @"\nARCHITECTURE:\n"];
-    output = [output stringByAppendingFormat: @"  Name:                 %@\n", [pi architecture]];
-    output = [output stringByAppendingFormat: @"  Word size:            %d\n", [pi wordSize]];
-    output = [output stringByAppendingFormat: @"  Endianness:           %@\n", [pi endianness]];
-    output = [output stringByAppendingString: @"\nHARDWARE:\n"];
-    output = [output stringByAppendingFormat: @"  Processor type:       %@\n", [pi processorType]];
-    output = [output stringByAppendingFormat: @"  Hardware platform:    %@\n", [pi hardwarePlatform]];
-    output = [output stringByAppendingString: @"\nNETWORK:\n"];
-    output = [output stringByAppendingFormat: @"  Hostname:             %@\n", [pi hostname]];
+    NSArray *kernelData = [[NSArray alloc] initWithObjects:
+                           [[NSArray alloc] initWithObjects: [pi kernelName], @"Name", nil],
+                           [[NSArray alloc] initWithObjects: [pi kernelVersion], @"Version", nil],
+                           [[NSArray alloc] initWithObjects: [pi kernelBuildString], @"Build string", nil],
+                           nil];
     
+    NSArray *architecture = [[NSArray alloc] initWithObjects:
+                             [[NSArray alloc] initWithObjects: [pi architecture], @"Name", nil],
+                             [[NSArray alloc] initWithObjects: [NSString stringWithFormat:@"%d", [pi wordSize]], @"Word size", nil],
+                             [[NSArray alloc] initWithObjects: [pi endianness], @"Endianness", nil],
+                             nil];
+    
+    NSArray *hardware = [[NSArray alloc] initWithObjects:
+                         [[NSArray alloc] initWithObjects: [pi processorType], @"Processor type", nil],
+                         [[NSArray alloc] initWithObjects: [pi hardwarePlatform], @"Hardware platform", nil],
+                         nil];
+    
+    NSMutableArray *network = [[NSMutableArray alloc] initWithObjects:
+                        [[NSArray alloc] initWithObjects: [pi hostname], @"Hostname", nil],
+                        [[NSArray alloc] initWithObjects: [pi publicIP], @"Public IP", nil],    
+                        nil];
+    
+    int i = 1;
     for (NSString *address in [pi ipAddresses])
     {
-        output = [output stringByAppendingFormat: @"  IP addresses:         %@\n", address];
+        [network insertObject:[[NSArray alloc] initWithObjects: address, [NSString stringWithFormat:@"Address %d", i], nil] atIndex:i];
+        i++;
     }
     
-    output = [output stringByAppendingFormat: @"  Public IP:            %@\n", [pi publicIP]];
-    output = [output stringByAppendingString: @"\nEXTRA (OS-specific):\n"];
-    output = [output stringByAppendingFormat: @"  XNU build version:    %@\n", [pi xnuBuildVersion]];
-    output = [output stringByAppendingFormat: @"  iOS system name:      %@\n", [pi systemName]];
-    output = [output stringByAppendingFormat: @"  iOS device name:      %@\n", [pi deviceName]];
-    output = [output stringByAppendingString: @"\nUnderlying UNAME results:\n"];
-    output = [output stringByAppendingFormat: @"  -s (sysname)          %@\n", [pi unameSysname]];
-    output = [output stringByAppendingFormat: @"  -o\n"];
-    output = [output stringByAppendingFormat: @"  -m (machine)          %@\n", [pi unameMachine]];
-    output = [output stringByAppendingFormat: @"  -p\n"];
-    output = [output stringByAppendingFormat: @"  -i\n"];
-    output = [output stringByAppendingFormat: @"  -M\n"];
-    output = [output stringByAppendingFormat: @"  -v (version)          %@\n", [pi unameVersion]];
-    output = [output stringByAppendingFormat: @"  -r (release)          %@\n", [pi unameRelease]];
-    output = [output stringByAppendingFormat: @"  -n (nodename)         %@\n", [pi unameNodename]];
+    NSArray *extra = [[NSArray alloc] initWithObjects:
+                      [[NSArray alloc] initWithObjects: [pi xnuBuildVersion], @"XNU build version", nil],
+                      [[NSArray alloc] initWithObjects: [pi systemName], @"iOS system name", nil],
+                      [[NSArray alloc] initWithObjects: [pi deviceName], @"iOS device name", nil],
+                      nil];
     
-    [infoLabel setText: output];
-    [infoLabel sizeToFit];
-    [scrollView setContentSize: infoLabel.frame.size];
+    NSArray *uname = [[NSArray alloc] initWithObjects:
+                      [[NSArray alloc] initWithObjects: [pi unameSysname], @"-s (sysname)", nil],
+                      [[NSArray alloc] initWithObjects: [pi unameMachine], @"-m (machine)", nil],
+                      [[NSArray alloc] initWithObjects: [pi unameVersion], @"-v (version)", nil],
+                      [[NSArray alloc] initWithObjects: [pi unameRelease], @"-r (release)", nil],
+                      [[NSArray alloc] initWithObjects: [pi unameNodename], @"-n (nodename)", nil],
+                      nil];
+    
+    NSArray *sections = [[NSArray alloc] initWithObjects:
+                              [[NSArray alloc] initWithObjects: osData, @"Operating system", nil],
+                              [[NSArray alloc] initWithObjects: kernelData, @"Kernel", nil],
+                              [[NSArray alloc] initWithObjects: architecture, @"Architecture", nil],
+                              [[NSArray alloc] initWithObjects: hardware, @"Hardware", nil],
+                              [[NSArray alloc] initWithObjects: network, @"Network", nil],
+                              [[NSArray alloc] initWithObjects: extra, @"Extra (OS-specific)", nil],
+                              [[NSArray alloc] initWithObjects: uname, @"Underlying uname results", nil],
+                              nil];
+    
+    self.data = sections;
+    [sections release];
+    [osData release];
+    [kernelData release];
+    [architecture release];
+    [hardware release];
+    [network release];
+    [extra release];
+    [uname release];
 }
 
 - (void)viewDidUnload
 {
-    [self setInfoLabel: nil];
-    [self setScrollView:nil];
+    [self.data release];
+    [pi release];
     [super viewDidUnload];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    if ([pi userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
     {
         return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
     }
@@ -91,9 +114,69 @@
 
 - (void)dealloc
 {
-    [infoLabel release];
-    [scrollView release];
     [super dealloc];
+}
+
+- (NSString*)sectionTitle:(NSInteger)index
+{
+    return [[self.data objectAtIndex:index] objectAtIndex:1];
+}
+
+- (NSArray*)sectionData:(NSInteger)index
+{
+    return [[self.data objectAtIndex:index] objectAtIndex:0];
+}
+
+- (NSString*)itemTitleForIndexPath:(NSIndexPath *)indexPath
+{
+    return [[[self sectionData:[indexPath section]] objectAtIndex:[indexPath row]] objectAtIndex:1];
+}
+
+- (NSString*)itemValueForIndexPath:(NSIndexPath *)indexPath
+{
+    return [[[self sectionData:[indexPath section]] objectAtIndex:[indexPath row]] objectAtIndex:0];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return [self.data count];
+}
+
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    return [self sectionTitle:section];
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [[self sectionData:section] count];
+}
+
+- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *pnameTableIdentifier = @"pnameTableIdentifier";
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:pnameTableIdentifier];
+    if (cell == nil)
+    {
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:pnameTableIdentifier] autorelease];
+    }
+    
+    cell.textLabel.text = [self itemTitleForIndexPath:indexPath];
+    cell.detailTextLabel.text = [self itemValueForIndexPath:indexPath];
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UIAlertView *alert = [[UIAlertView alloc]
+                          initWithTitle:[self itemTitleForIndexPath:indexPath]
+                          message:[self itemValueForIndexPath:indexPath]
+                          delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
+    [alert release];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 @end

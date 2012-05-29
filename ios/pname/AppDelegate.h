@@ -9,8 +9,13 @@
 #import <UIKit/UIKit.h>
 
 @class ViewController;
+@class PlatformInformation;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
+{
+@private
+    PlatformInformation *pi;
+}
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) ViewController *viewController;

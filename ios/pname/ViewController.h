@@ -8,9 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@class PlatformInformation;
 
-@property (retain, nonatomic) IBOutlet UILabel *infoLabel;
-@property (retain, nonatomic) IBOutlet UIScrollView *scrollView;
+@interface ViewController : UIViewController
+{
+@private
+    NSArray *data;
+    PlatformInformation *pi;
+}
+
+@property (retain, nonatomic) NSArray *data;
 
 @end
