@@ -30,9 +30,6 @@
 #include <windows.h>
 #include <stdio.h>
 
-#pragma comment(lib, "user32.lib")
-#pragma comment(lib, "version.lib")
-
 #ifndef VER_SERVER_NT
 #define VER_SERVER_NT                       0x80000000
 #endif
