@@ -48,9 +48,16 @@
         self.viewController = [[[ViewController alloc] initWithNibName:@"ViewController_iPad" bundle:nil] autorelease];
     }
     
-    // http://stackoverflow.com/a/8769986/343845
-    //self.window.rootViewController = self.viewController;
-    [self.window addSubview: self.viewController.view];
+    if ([self.window respondsToSelector:@selector(setRootViewController:)])
+    {
+        self.window.rootViewController = self.viewController;
+    }
+    else
+    {
+        [self.window addSubview:self.viewController.view];
+        [self.viewController.view setFrame:[[UIScreen mainScreen] applicationFrame]];
+    }
+    
     [self.window makeKeyAndVisible];
     return YES;
 }
