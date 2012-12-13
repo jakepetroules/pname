@@ -17,7 +17,6 @@
 		14442C83152AAE58008657F7 /* ViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 14442C81152AAE58008657F7 /* ViewController_iPhone.xib */; };
 		14442C86152AAE58008657F7 /* ViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 14442C84152AAE58008657F7 /* ViewController_iPad.xib */; };
 		14442C8E152AB0BD008657F7 /* PlatformInformation.m in Sources */ = {isa = PBXBuildFile; fileRef = 14442C8D152AB0BD008657F7 /* PlatformInformation.m */; };
-		144D88061679F59F007B8B96 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 144D88051679F59F007B8B96 /* Default-568h@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,7 +36,6 @@
 		14442C85152AAE58008657F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPad.xib; sourceTree = "<group>"; };
 		14442C8C152AB0BD008657F7 /* PlatformInformation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatformInformation.h; sourceTree = "<group>"; };
 		14442C8D152AB0BD008657F7 /* PlatformInformation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatformInformation.m; sourceTree = "<group>"; };
-		144D88051679F59F007B8B96 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +55,6 @@
 		14442C5D152AAE57008657F7 = {
 			isa = PBXGroup;
 			children = (
-				144D88051679F59F007B8B96 /* Default-568h@2x.png */,
 				14442C72152AAE58008657F7 /* pname */,
 				14442C6B152AAE58008657F7 /* Frameworks */,
 				14442C69152AAE58008657F7 /* Products */,
@@ -162,7 +159,6 @@
 				14442C77152AAE58008657F7 /* InfoPlist.strings in Resources */,
 				14442C83152AAE58008657F7 /* ViewController_iPhone.xib in Resources */,
 				14442C86152AAE58008657F7 /* ViewController_iPad.xib in Resources */,
-				144D88061679F59F007B8B96 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
