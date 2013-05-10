@@ -17,6 +17,7 @@
 		14442C83152AAE58008657F7 /* ViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 14442C81152AAE58008657F7 /* ViewController_iPhone.xib */; };
 		14442C86152AAE58008657F7 /* ViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 14442C84152AAE58008657F7 /* ViewController_iPad.xib */; };
 		14442C8E152AB0BD008657F7 /* PlatformInformation.m in Sources */ = {isa = PBXBuildFile; fileRef = 14442C8D152AB0BD008657F7 /* PlatformInformation.m */; };
+		146001B3173D16760003923A /* UIDevice+Backports.m in Sources */ = {isa = PBXBuildFile; fileRef = 146001B2173D16760003923A /* UIDevice+Backports.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,8 @@
 		14442C85152AAE58008657F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPad.xib; sourceTree = "<group>"; };
 		14442C8C152AB0BD008657F7 /* PlatformInformation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatformInformation.h; sourceTree = "<group>"; };
 		14442C8D152AB0BD008657F7 /* PlatformInformation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatformInformation.m; sourceTree = "<group>"; };
+		146001B1173D16750003923A /* UIDevice+Backports.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+Backports.h"; sourceTree = "<group>"; };
+		146001B2173D16760003923A /* UIDevice+Backports.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+Backports.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +89,8 @@
 				14442C7C152AAE58008657F7 /* AppDelegate.m */,
 				14442C8C152AB0BD008657F7 /* PlatformInformation.h */,
 				14442C8D152AB0BD008657F7 /* PlatformInformation.m */,
+				146001B1173D16750003923A /* UIDevice+Backports.h */,
+				146001B2173D16760003923A /* UIDevice+Backports.m */,
 				14442C7E152AAE58008657F7 /* ViewController.h */,
 				14442C7F152AAE58008657F7 /* ViewController.m */,
 				14442C81152AAE58008657F7 /* ViewController_iPhone.xib */,
@@ -173,6 +178,7 @@
 				14442C7D152AAE58008657F7 /* AppDelegate.m in Sources */,
 				14442C80152AAE58008657F7 /* ViewController.m in Sources */,
 				14442C8E152AB0BD008657F7 /* PlatformInformation.m in Sources */,
+				146001B3173D16760003923A /* UIDevice+Backports.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

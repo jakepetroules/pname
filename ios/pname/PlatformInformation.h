@@ -40,8 +40,6 @@
 - (NSString *)xnuBuildVersion;
 - (NSString *)systemName;
 - (NSString *)deviceName;
-- (UIUserInterfaceIdiom)userInterfaceIdiom;
-- (NSString *)userInterfaceIdiomString;
 
 - (NSString *)unameSysname;
 - (NSString *)unameNodename;

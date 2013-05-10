@@ -160,36 +160,6 @@
     return [[UIDevice currentDevice] name];
 }
 
-/*!
- * Retrieves the UI idiom (i.e. iPhone or iPad) in a way that is safe for pre-iOS 3.2 devices
- */
-- (UIUserInterfaceIdiom)userInterfaceIdiom
-{
-    UIUserInterfaceIdiom idiom = UIUserInterfaceIdiomPhone;
-    
-    // If the userInterfaceIdiom selector is missing, the iOS version
-    // is older than 3.2 and is therefore guaranteed to be an iPhone
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(userInterfaceIdiom)])
-    {
-        idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-    }
-    
-    return idiom;
-}
-
-- (NSString *)userInterfaceIdiomString
-{
-    switch ([self userInterfaceIdiom])
-    {
-        case UIUserInterfaceIdiomPhone:
-            return @"iPhone";
-        case UIUserInterfaceIdiomPad:
-            return @"iPad";
-        default:
-            return @"unknown";
-    }
-}
-
 - (NSString *)unameSysname
 {
     return m_unameSysname;
